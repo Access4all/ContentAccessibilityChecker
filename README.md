@@ -21,7 +21,7 @@ Documentation:
 ### Einleitung ######
 Dieses Dokument beschreibt den Aufbau und die Funktionsweise des Content Accessibility Checker. Der CAC ist ein in Javascript geschriebenes Skript zur Überprüfung von HTML-Code bezüglich der Barrierefreiheit (Accessibility).Der CAC prüft verschiedene Kriterien der Publisher Accessibility Checklist (erhältlich bei Access4all) und stellt diese direkt auf der Zielwebseite dar:
 
-![My image](Access4all.github.com/ContentAccessibilityChecker/Images/Website.png)
+![alt text](https://github.com/Access4all/ContentAccessibilityChecker/raw/master/Images/Website.png "Website")
 
 Der Content Accessibility Checker besteht aus einem Menü zum ein- und ausblenden der Ergebnisse (A), den Hinweisen im unteren Bereich (B), sowie der Navigation (C) um durch die Hinweise zu blättern. Beim Blättern durch die Hinweise wird das betroffene HTML-Element hervorgehoben (D):
 
