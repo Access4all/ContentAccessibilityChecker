@@ -25,15 +25,17 @@ Dieses Dokument beschreibt den Aufbau und die Funktionsweise des Content Accessi
 
 Der Content Accessibility Checker besteht aus einem Menü zum ein- und ausblenden der Ergebnisse (A), den Hinweisen im unteren Bereich (B), sowie der Navigation (C) um durch die Hinweise zu blättern. Beim Blättern durch die Hinweise wird das betroffene HTML-Element hervorgehoben (D):
 
-![My image](Access4all.github.com/ContentAccessibilityChecker/Images/Website2.png)
+![alt text](https://github.com/Access4all/ContentAccessibilityChecker/raw/master/Images/Website2.png "Website2")
+
 
 ### Technische Funktionsweise ######
-Der CAC basiert auf zwei Open-Source Javascript-Bibliotheken. Der jQuery-Library (www.jquery.com) und dem pageguide (http://tracelytics.github.com/pageguide/). jQuery wird verwendet um im HTML-Code die entsprechenden Elemente (Tags, Attribute) zu selektieren und die Prüffunktionen darauf anzuwenden. Pageguide wird verwendet um die Ergebnisse darzustellen.Der CAC besteht aus folgenden Dateien:![My image](Access4all.github.com/ContentAccessibilityChecker/Images/Contents.png)
+Der CAC basiert auf zwei Open-Source Javascript-Bibliotheken. Der jQuery-Library (www.jquery.com) und dem pageguide (http://tracelytics.github.com/pageguide/). jQuery wird verwendet um im HTML-Code die entsprechenden Elemente (Tags, Attribute) zu selektieren und die Prüffunktionen darauf anzuwenden. Pageguide wird verwendet um die Ergebnisse darzustellen.Der CAC besteht aus folgenden Dateien:![alt text](https://github.com/Access4all/ContentAccessibilityChecker/raw/master/Images/Contents.png "Contents")
 
 Die .css Datei enthält die Stiele für die DarstellungDie .js Datei ist die Hauptanwendung CACDie jquery Datei enthält die jQuery-BibliothekeDazu noch die Bilder für den CAC (Pfeile, Icon)Damit der CAC funktionieren kann muss zuerst die jQuery-Bibliothek und das CSS in der HTML-Seite geladen werden. Anschliessend kann die contentaccessibilitychecker.js geladen werden. Siehe nächstes Kapitel.
 
 ### Installation ######
-**1. Den CAC direkt in eine bestehende Webseite einbinden:**Direkt im HTML-Head Tag die entsprechenden Verweise hinzufügen:
+**1. Den CAC direkt in eine bestehende Webseite einbinden:**
+Direkt im HTML-Head Tag die entsprechenden Verweise hinzufügen:
 
 ```html
 <!DOCTYPE html><html><head><title>Testseite für den Accessibility-Checker</title><link href="PFAD/contentaccessibilitychecker.css" type="text/css" /><script type="text/javascript" src="PFAD/jquery-1.7.2.min.js"></script><script type="text/javascript" src="PFAD/contentaccessibilitychecker.js"></script></head><body>
@@ -47,7 +49,8 @@ Zusätzlich benötigt der CAC jeweils ein DIV-Element direkt nach dem Header-Tag
 <div id="pg_result_footer"></div></body></html>
  ```
 
-**2. Den CAC per Javascript installieren**Bei dieser Möglichkeit wird der CAC über Javascript in die Webseite eingefügt. Diese Methode wird beim Firefox-Plugin und bei der MediaWiki Implementation verwendet. Auch hier wird zuerst jeweils zwei DIV-Elemente erstellt und anschliessend die Scripts und die CSS-Datei in die Seite indiziert:
+**2. Den CAC per Javascript installieren**
+Bei dieser Möglichkeit wird der CAC über Javascript in die Webseite eingefügt. Diese Methode wird beim Firefox-Plugin und bei der MediaWiki Implementation verwendet. Auch hier wird zuerst jeweils zwei DIV-Elemente erstellt und anschliessend die Scripts und die CSS-Datei in die Seite indiziert:
 
 ```javascript
 // add result-header to pagevar body = content.document.getElementsByTagName('body')[0];var header = content.document.createElement('div');header.id = 'pg_result_general';body.insertBefore(header, body.firstChild);       // add result-footer to pagevar foot = content.document.createElement('div');foot.id = "pg_result_footer";body.appendChild(foot);       // add scripts to pageinjectJs('PFAD/jquery-1.7.2.js');injectCss('PFAD/checker.css');injectJs('PFAD/checker.js');       // support function for script injectionfunction injectJs(link) {    var src = content.document.createElement('script');    src.type = 'text/javascript';    src.src = link;    content.document.getElementsByTagName('head')[0].appendChild(src);}function injectCss(link) {    var src = content.document.createElement('link');    src.type = 'text/css';    src.rel = 'stylesheet';    src.href = link;    content.document.getElementsByTagName('head')[0].appendChild(src);  }
@@ -59,13 +62,15 @@ Dies führt schlussendlich zum selben HTML-Code, wie Variante 1.
 Ist der CAC installiert kann er auf zwei Arten gestartet werden. Wichtig ist, dass die jQuery-Library bereits geladen ist. Dies kann über eine jQuery-Funktion ($(document).ready()) gemacht werden. 
 
 **1. Den CAC direkt aus einer Webseite starten**
+
 Ist der CAC direkt in der Webseite eingebettet, muss nur folgendes Script-Stück hinzugefügt werden:
 
 ```javascript
 // In der HTML-Webseite<script type="text/javascript">   $(document).ready(function() {      checkPage();   })</script>
 ```
 
-Sobald die Webseite und jQuery vollständig geladen sind, wird die Funktion checkPage() ausgeführt, welche die Prüfung durchführt.**2. CAC automatisch starten**Bei der zweiten Variante ist der Ladezustand der Webseite nicht bekannt. Deshalb wird der CAC automatisch aus dem Hauptscript gestartet, sobald dieses geladen ist. Dazu wird dieselbe Funktion wie bei 1 verwendet:
+Sobald die Webseite und jQuery vollständig geladen sind, wird die Funktion checkPage() ausgeführt, welche die Prüfung durchführt.**2. CAC automatisch starten**
+Bei der zweiten Variante ist der Ladezustand der Webseite nicht bekannt. Deshalb wird der CAC automatisch aus dem Hauptscript gestartet, sobald dieses geladen ist. Dazu wird dieselbe Funktion wie bei 1 verwendet:
 
 ```javascript
 // In der contentaccessibilitychecker.js Datei$(document).ready(function() {  checkPage();})
@@ -74,6 +79,7 @@ Sobald die Webseite und jQuery vollständig geladen sind, wird die Funktion chec
 
 ### CAC Funktionen / CAC Anpassen ######
 Alle Funktionen und auch Texte / Parameter können im Hauptscript contentaccessibilitychecker.js angepasst und verändert werden. Der CAC verfügt über folgende AbschnitteGlobale Variablen 	= 	Hier werden die Hinweise zwischengespeichert.Parameter 	= 	Hier werden z.B. die Dateiformate, Abkürzungen usw. definiertAllgemeine Hinweise 	= 	Texte für die allgemeinen HinweiseElement Hinweise 	= 	Texte für die elementbezogenen HinweisecheckPage()  	= 	Die Prüffunktion**Detailerklärung Parameter** 
+
 Folgende Parameter sind definiert und können angepasst werden:
 
 ```javascript
@@ -105,6 +111,7 @@ In der mediaWiki_CAC.js Datei ist ein Skript hinterlegt, welches ein spezielles 
 <script type="text/javascript">    // RLE - 15.01.2013    // Script to run open preview in another window and run CAC    // support function for script injection    function injectJs(link) {        var src = printDocument.createElement('script');        src.type = 'text/javascript';        src.src = link;        printDocument.getElementsByTagName('head')[0].appendChild(src);    }    function injectCss(link) {        var src = printDocument.createElement('link');        src.type = 'text/css';        src.rel = 'stylesheet';        src.href = link;        printDocument.getElementsByTagName('head')[0].appendChild(src);      }    // create new window with preview-content    var printPreview = window.open('', 'print_preview');    var printDocument = printPreview.document;    var wikiContent = document.getElementById('wikiPreview');    var headContent = document.getElementsByTagName('head')[0];    printDocument.open();    printDocument.write("<!DOCTYPE html><html><head><meta charset='UTF-8'>"      + '<link rel="stylesheet" href="/sagWiki/load.php?debug=false&amp;lang=de&amp;modules=mediawiki.legacy.commonPrint%2Cshared%7Cskins.vector&amp;only=styles&amp;skin=vector&amp;*" />'      + '<link rel="stylesheet" href="/sagWiki/load.php?debug=false&amp;lang=de&amp;modules=site&amp;only=styles&amp;skin=vector&amp;*" />'      + "</head><body><div id='pg_result_general'></div><div id='content' style='margin-left: 1em;'>"      + wikiContent.innerHTML + "</div><div id='pg_result_footer'></div></body></html>");    // remove preview-note    var notediv = printDocument.getElementsByClassName('previewnote')[0];    var wikidiv = printDocument.getElementById('content');    wikidiv.removeChild(notediv);          // inject CAC Scripts + CSS     injectJs("/sagWiki/extensions/ContentAccessibilityChecker/jquery-1.7.2.min.js");    injectCss("/sagWiki/extensions/ContentAccessibilityChecker/contentaccessibilitychecker.css");    injectJs("/sagWiki/extensions/ContentAccessibilityChecker/contentaccessibilitychecker.js");    printDocument.close();</script>```
 
 **Ergebnis CAC im MediaWiki von Access4all**
-![My image](Access4all.github.com/ContentAccessibilityChecker/Images/CACBrowser.png)
+![alt text](https://github.com/Access4all/ContentAccessibilityChecker/raw/master/Images/CACBrowser.png "CACBrowser")
+
 
 
