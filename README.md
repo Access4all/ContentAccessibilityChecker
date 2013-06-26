@@ -5,7 +5,7 @@ Der Content Accessibility Checker von Access4all
 
 Licence:
 --------
-/*
+
  * Access4all, Zugang für alle, Schweizerische Stiftung zur behindertengerechten Technologienutzung
  *
  * Copyright 2013 Access4all
@@ -13,7 +13,7 @@ Licence:
  * http://creativecommons.org/licenses/by/3.0/ch/legalcode.de
  *
  * Contributing Author: Access4all Team, Reto Lehmann bfh
- */
+
 
 
 Documentation:
@@ -21,14 +21,14 @@ Documentation:
 ### Einleitung ######
 Dieses Dokument beschreibt den Aufbau und die Funktionsweise des Content Accessibility Checker. Der CAC ist ein in Javascript geschriebenes Skript zur Überprüfung von HTML-Code bezüglich der Barrierefreiheit (Accessibility).Der CAC prüft verschiedene Kriterien der Publisher Accessibility Checklist (erhältlich bei Access4all) und stellt diese direkt auf der Zielwebseite dar:
 
-![My image](Access4all.github.com/repository/Images/Website.png)
+![My image](Access4all.github.com/ContentAccessibilityChecker/Images/Website.png)
 
 Der Content Accessibility Checker besteht aus einem Menü zum ein- und ausblenden der Ergebnisse (A), den Hinweisen im unteren Bereich (B), sowie der Navigation (C) um durch die Hinweise zu blättern. Beim Blättern durch die Hinweise wird das betroffene HTML-Element hervorgehoben (D):
 
-![My image](Access4all.github.com/repository/Images/Website2.png)
+![My image](Access4all.github.com/ContentAccessibilityChecker/Images/Website2.png)
 
 ### Technische Funktionsweise ######
-Der CAC basiert auf zwei Open-Source Javascript-Bibliotheken. Der jQuery-Library (www.jquery.com) und dem pageguide (http://tracelytics.github.com/pageguide/). jQuery wird verwendet um im HTML-Code die entsprechenden Elemente (Tags, Attribute) zu selektieren und die Prüffunktionen darauf anzuwenden. Pageguide wird verwendet um die Ergebnisse darzustellen.Der CAC besteht aus folgenden Dateien:![My image](Access4all.github.com/repository/Images/Contents.png)
+Der CAC basiert auf zwei Open-Source Javascript-Bibliotheken. Der jQuery-Library (www.jquery.com) und dem pageguide (http://tracelytics.github.com/pageguide/). jQuery wird verwendet um im HTML-Code die entsprechenden Elemente (Tags, Attribute) zu selektieren und die Prüffunktionen darauf anzuwenden. Pageguide wird verwendet um die Ergebnisse darzustellen.Der CAC besteht aus folgenden Dateien:![My image](Access4all.github.com/ContentAccessibilityChecker/Images/Contents.png)
 
 Die .css Datei enthält die Stiele für die DarstellungDie .js Datei ist die Hauptanwendung CACDie jquery Datei enthält die jQuery-BibliothekeDazu noch die Bilder für den CAC (Pfeile, Icon)Damit der CAC funktionieren kann muss zuerst die jQuery-Bibliothek und das CSS in der HTML-Seite geladen werden. Anschliessend kann die contentaccessibilitychecker.js geladen werden. Siehe nächstes Kapitel.
 
@@ -105,6 +105,6 @@ In der mediaWiki_CAC.js Datei ist ein Skript hinterlegt, welches ein spezielles 
 <script type="text/javascript">    // RLE - 15.01.2013    // Script to run open preview in another window and run CAC    // support function for script injection    function injectJs(link) {        var src = printDocument.createElement('script');        src.type = 'text/javascript';        src.src = link;        printDocument.getElementsByTagName('head')[0].appendChild(src);    }    function injectCss(link) {        var src = printDocument.createElement('link');        src.type = 'text/css';        src.rel = 'stylesheet';        src.href = link;        printDocument.getElementsByTagName('head')[0].appendChild(src);      }    // create new window with preview-content    var printPreview = window.open('', 'print_preview');    var printDocument = printPreview.document;    var wikiContent = document.getElementById('wikiPreview');    var headContent = document.getElementsByTagName('head')[0];    printDocument.open();    printDocument.write("<!DOCTYPE html><html><head><meta charset='UTF-8'>"      + '<link rel="stylesheet" href="/sagWiki/load.php?debug=false&amp;lang=de&amp;modules=mediawiki.legacy.commonPrint%2Cshared%7Cskins.vector&amp;only=styles&amp;skin=vector&amp;*" />'      + '<link rel="stylesheet" href="/sagWiki/load.php?debug=false&amp;lang=de&amp;modules=site&amp;only=styles&amp;skin=vector&amp;*" />'      + "</head><body><div id='pg_result_general'></div><div id='content' style='margin-left: 1em;'>"      + wikiContent.innerHTML + "</div><div id='pg_result_footer'></div></body></html>");    // remove preview-note    var notediv = printDocument.getElementsByClassName('previewnote')[0];    var wikidiv = printDocument.getElementById('content');    wikidiv.removeChild(notediv);          // inject CAC Scripts + CSS     injectJs("/sagWiki/extensions/ContentAccessibilityChecker/jquery-1.7.2.min.js");    injectCss("/sagWiki/extensions/ContentAccessibilityChecker/contentaccessibilitychecker.css");    injectJs("/sagWiki/extensions/ContentAccessibilityChecker/contentaccessibilitychecker.js");    printDocument.close();</script>```
 
 **Ergebnis CAC im MediaWiki von Access4all**
-![My image](Access4all.github.com/repository/Images/CACBrowser.png)
+![My image](Access4all.github.com/ContentAccessibilityChecker/Images/CACBrowser.png)
 
 
