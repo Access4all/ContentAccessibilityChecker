@@ -1,0 +1,791 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/Dropbox/Studium/bthw/Arbeit/Code/Code_Current/web/contentaccessibilitychecker/contentaccessibilitychecker.js.html</title>
+<meta name="Generator" content="Vim/7.3">
+<meta name="plugin-version" content="vim7.3_v12">
+<meta name="syntax" content="javascript">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,prevent_copy=">
+<meta name="colorscheme" content="macvim">
+<style type="text/css">
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+* { font-size: 1em; }
+.Boolean { color: #cd0000; }
+.Statement { color: #b03060; font-weight: bold; }
+.Comment { color: #0000ee; font-style: italic; }
+.Special { color: #8a2be2; }
+.Identifier { color: #458b74; }
+.String { color: #4a708b; }
+-->
+</style>
+</head>
+<body>
+<pre id='vimCodeElement'>
+<span class="Comment">// Global variables</span>
+<span class="Identifier">var</span> resultList = <span class="Identifier">[]</span>;
+<span class="Identifier">var</span> resultListSorted = <span class="Identifier">[]</span>;
+<span class="Identifier">var</span> resultCounter = 0;
+<span class="Identifier">var</span> itemNr = 0;
+
+<span class="Comment">// Params</span>
+<span class="Identifier">var</span> wlDiag = <span class="Identifier">[</span> <span class="String">'Diagram'</span>, <span class="String">'Organigram'</span>, <span class="String">'Lageplan'</span>, <span class="String">'Stadtplan'</span>, <span class="String">'Wegbeschreibung'</span> <span class="Identifier">]</span>;
+<span class="Identifier">var</span> specialCharacters = <span class="String">'[♥¤§¨®©¬¯™ª±µ´·ºº¢·¶♀↗↑↓→←]'</span>;
+<span class="Identifier">var</span> filetypes = <span class="String">'(.jpg|.gif|.doc|.pdf|.xls|.xlsx|.doc|.docx|.ppt|.pps|.pptx|.ppsx|.png|.tiff|.mov|.mpg|.mpeg|.xvid|.avi|.flv|.swf|.mp3|.ogg|.wav|.aac|.lame)'</span>;
+<span class="Identifier">var</span> videotypes = <span class="String">'(.swf|.flv)'</span>;
+<span class="Identifier">var</span> embedVideo = <span class="String">'(.mpeg|.mpg|.xvid|.avi|.flv|youtube|.swf|.mov)'</span>;
+<span class="Identifier">var</span> audiotypes = <span class="String">'(.mp3|.ogg|.wav|.aac|.lame)'</span>;
+<span class="Identifier">var</span> excludedAbbreviations = <span class="String">'CHF,EUR'</span>;
+<span class="Identifier">var</span> shortLinks = <span class="String">'(hier|Hier|Weiter|weiter|klicken|Klicken|Mehr|mehr)'</span>;
+
+<span class="Comment">// Page error-messages</span>
+<span class="Identifier">var</span> txtIntroduction = <span class="String">'Der Content Accessibility Checker weist Sie auf Fehler und mögliche Verbesserungen im HTML-Code hin. Zuerst werden allgemeine Hinweise (in orange) zur Barrierefreiheit angezeigt, danach werden spezifische Hinweise und Fehler (in pink) aufgezeigt. Weitere Informationen zu den jeweiligen Fehlern/Hinweisen gibt es in der &lt;a href=&quot;<a href="http://www.accessibility-checklist.ch/">http://www.accessibility-checklist.ch/</a>&quot;&gt;Accessibility-Checkliste&lt;/a&gt;.'</span>;
+<span class="Identifier">var</span> txtContrast = <span class="String">'Allgemeiner Hinweis: Bei der Darstellung, vorallem bei Bildern und Textfarben, sollte auf einen ausreichenden Kontrast geachtet werden.'</span>;
+<span class="Identifier">var</span> txtColors = <span class="String">'Allgemeiner Hinweis: Die Informationen dieser Seite sollte nicht nur über Farben vermittelt werden (z.B. auch textlich erklärt sein).'</span>;
+<span class="Identifier">var</span> txtComprehend = <span class="String">'Allgemeiner Hinweis: Der gesamte Inhalt sollte in möglichst einfacher Sprache verfasst sein (Aktivformulierung, keine Schlangensätze, Fachbegriffe vermeiden). Abkürzungen sollten erklärt werden.'</span>;
+
+<span class="Comment">// Element error-messages</span>
+<span class="Identifier">var</span> txtEmptyP = <span class="String">'Hinweis: Hier ist ein leerer &amp;ltp&amp;gt Tag. Es sollte entfernt werden.'</span>;
+<span class="Identifier">var</span> txtAlt = <span class="String">'Fehler: Der Alternativtext fehlt. Es sollte das Attribut alt=&quot;xxxxx&quot; ergänzt werden.'</span>;
+<span class="Identifier">var</span> txtArea = <span class="String">'Fehler: Der Alternativtext für eine Area fehlt oder ist leer. Es sollte bei jeder Area das Attribut alt=&quot;xxxx&quot; ergäntzt/ausgefüllt werden.'</span>;
+<span class="Identifier">var</span> txtAltEmpty = <span class="String">'Hinweis: Der Alternativtext des markierten Elementes ist leer. Hat dieses Element einen ausschliesslich dekorativem Charakter?'</span>;
+<span class="Identifier">var</span> txtAltLink = <span class="String">'Hinweis: Der Alternativtext sollte bei einem verlinkten Element über den Linkzweck informieren.'</span>;
+<span class="Identifier">var</span> txtDiag1 = <span class="String">'Hinweis: </span><span class="Special">\&quot;</span><span class="String">'</span>;
+<span class="Identifier">var</span> txtDiag2 = <span class="String">'</span><span class="Special">\&quot;</span><span class="String"> wurde im Text verwendet. Falls ein(e) '</span>;
+<span class="Identifier">var</span> txtDiag3 = <span class="String">' auf dieser Seite angezeigt/verlinkt ist sollte ein erklärender Text dazu vorhanden sein.'</span>;
+<span class="Identifier">var</span> txtHeading1 = <span class="String">'Fehler: Die Überschriften beginnen nicht mit Ebene h1.'</span>;
+<span class="Identifier">var</span> txtHeading2 = <span class="String">'Fehler: Es wird eine Überschriften-Ebene übersprungen. h'</span>;
+<span class="Identifier">var</span> txtHeading3 = <span class="String">' zu h'</span>;
+<span class="Identifier">var</span> txtParagraph = <span class="String">'Hinweis: Um diesen Text fehlt das &amp;ltp&amp;gt Tag. Es sollte ergänzt werden.'</span>;
+<span class="Identifier">var</span> txtNoHeading = <span class="String">'Hinweis: Ist dieses Element vielleicht eine Überschrift? Falls ja sollte ein &amp;lth&amp;gt-Tag ergänzt werden.'</span>;
+<span class="Identifier">var</span> txtStrong = <span class="String">'Fehler: &amp;ltStrong&amp;gt-Tags sollte nur innerhalb von &amp;ltp&amp;gt-Tags verwendet werden. Oder handelt es sich hier um eine Überschrift? Dann sollten die &amp;lth1&amp;gt bis &amp;lth6&amp;gt Tags verwendet werden.'</span>;
+<span class="Identifier">var</span> txtAbbrevation = <span class="String">'Hinweis: Handelt es sich bei dem Text in Grossbuchstaben allenfalls um eine Abkürzung? Abkürzungen sollten im Text erklärt sein.'</span>;
+<span class="Identifier">var</span> txtTableHeader = <span class="String">'Fehler: Eine Tabelle sollte immer eine Spalten- oder Zeilenüberschrift mit dem &amp;ltth&amp;gt-Tag haben.'</span>;
+<span class="Identifier">var</span> txtTableEmptyCol = <span class="String">'Fehler: Diese Tabelle enthält leere Spalten.'</span>;
+<span class="Identifier">var</span> txtTableEmptyRow = <span class="String">'Fehler: Diese Tabelle enthält leere Zeilen.'</span>;
+<span class="Identifier">var</span> txtTableSpecial = <span class="String">'Hinweis: Diese Tabelle enthält Sonderzeichen. Diese sollten weggelassen werden.'</span>;
+<span class="Identifier">var</span> txtLayoutTable = <span class="String">'Hinweis: Ist dies eine Tabelle für Layout-Zwecke? Tabellen sollten nur zur strukturierten Darstellung von Informationen verwendet werden, nicht für Layout-Zwecke.'</span>;
+<span class="Identifier">var</span> txtComplexTable = <span class="String">'Hinweis: Dies ist eine komplexe Tabelle, es sollte einen Spalten/Zeilen-Titel (&amp;ltthead&amp;gt Tag und &amp;ltth&amp;gt Tag) und eine Zusammenfassung (&amp;ltcaption&amp;gt Tag) vorhanden sein.'</span>;
+<span class="Identifier">var</span> txtList = <span class="String">'Hinweis: In diesem Text wurde ein Aufzählungs-Zeichen gefunden. Ist dies eine Aufzählung? Dann sollten die &amp;ltul&amp;gt&amp;ltli&amp;gt-Tags verwendet werden.'</span>;
+<span class="Identifier">var</span> txtLinkFile = <span class="String">'Hinweis: Bei Download-Links sollte im Linktext der Dateityp und die Dateigrösse angegeben sein.'</span>;
+<span class="Identifier">var</span> txtPDF = <span class="String">'Hinweis: PDF Dateien sollten barrierefrei sein. Prüfen können Sie dies mit dem &lt;a href=&quot;<a href="http://www.access-for-all.ch/en/pdf-lab/pdf-accessibility-checker-pac.html">http://www.access-for-all.ch/en/pdf-lab/pdf-accessibility-checker-pac.html</a>&quot;&gt;PDF Accessibility Checker PAC&lt;/a&gt;. Falls ein barrierefreies PDF nicht möglich sein sollte, sollte eine alternative Form vorhanden sein. z.B. HTML.'</span>;
+<span class="Identifier">var</span> txtLinkDescription = <span class="String">'Hinweis: Dieser Linktext ist sehr kurz. Ist der Linktext auch unabhänig vom Kontext verständlich?'</span>;
+<span class="Identifier">var</span> txtVideo = <span class="String">'Hinweis: Videos sollten über eine Textalternative und/oder über Untertitel verfügen. Speziell dann, wenn wichtige Informationen &lt;b&gt;nur&lt;/b&gt; über das Video vermittelt werden. Ebenfalls sollten diese nicht automatisch mit dem Abspielen beginnen.'</span>;
+<span class="Identifier">var</span> txtAudio = <span class="String">'Hinweis: Audioinhalte sollten über eine Textalternative verfügen. Zudem sollen Audioinhalte nicht automatisch abgespielt werden.'</span>;
+
+
+<span class="Identifier">function</span> checkPage()
+<span class="Identifier">{</span>
+    <span class="Comment">// ## 0. Introduction</span>
+    addError(<span class="Statement">null</span>, txtIntroduction);
+
+    <span class="Comment">// ## 1. General info messages ##</span>
+
+    <span class="Comment">// 1.1 General info about comprehensability</span>
+    addError(<span class="Statement">null</span>, txtComprehend);
+
+    <span class="Comment">// 1.2 Message for images to have a good contrast</span>
+    addError(<span class="Statement">null</span>, txtContrast);
+
+    <span class="Comment">// 1.3 Color info in body</span>
+    addError(<span class="Statement">null</span>, txtColors);
+
+    <span class="Comment">// 2. ## Element checks ##</span>
+
+    <span class="Comment">// 2.1 Check for missing alt=&quot;&quot; statements (img,input,area)</span>
+    $(<span class="String">'img,input,area'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> alt = <span class="Identifier">this</span>.getAttribute(<span class="String">'alt'</span>);
+
+        <span class="Statement">switch</span>(<span class="Identifier">this</span>.tagName)<span class="Identifier">{</span>
+            <span class="Statement">case</span> <span class="String">'AREA'</span>:
+                <span class="Statement">if</span> (alt == <span class="Statement">null</span> || alt == <span class="String">''</span>)<span class="Identifier">{</span>
+                    <span class="Identifier">var</span> mapName = <span class="Identifier">this</span>.parentNode.name;
+                    <span class="Identifier">var</span> imgNode = $(<span class="String">'[usemap=&quot;#'</span> + mapName + <span class="String">'&quot;]'</span>);
+                    <span class="Statement">if</span> (imgNode != <span class="Statement">null</span>) <span class="Identifier">{</span>
+                        addError(imgNode<span class="Identifier">[</span>0<span class="Identifier">]</span>, txtArea);
+                    <span class="Identifier">}</span>
+                <span class="Identifier">}</span>
+                <span class="Statement">break</span>;
+
+            <span class="Statement">case</span> <span class="String">'IMG'</span>:
+                <span class="Comment">// check if parent node is &lt;a href...&gt;&lt;/a&gt;</span>
+                <span class="Identifier">var</span> parentTag = (<span class="Identifier">this</span>.parentNode.tagName == <span class="String">'A'</span>) ? <span class="Boolean">true</span> : <span class="Boolean">false</span>;
+                <span class="Statement">if</span> (parentTag)<span class="Identifier">{</span>
+                    <span class="Statement">if</span> (alt == <span class="Statement">null</span> || alt == <span class="String">''</span>)<span class="Identifier">{</span>
+                        addError(<span class="Identifier">this</span>, txtAlt);
+                    <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+                        addError(<span class="Identifier">this</span>, txtAltLink);
+                    <span class="Identifier">}</span>
+                <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+                    <span class="Statement">if</span> (alt == <span class="Statement">null</span>) <span class="Identifier">{</span>
+                        addError(<span class="Identifier">this</span>, txtAlt);
+                    <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Statement">if</span> (alt == <span class="String">''</span>) <span class="Identifier">{</span>
+                        addError(<span class="Identifier">this</span>, txtAltEmpty);
+                    <span class="Identifier">}</span>
+                <span class="Identifier">}</span>
+                <span class="Statement">break</span>;
+
+            <span class="Statement">case</span> <span class="String">'INPUT'</span>:
+                <span class="Statement">if</span> (alt == <span class="Statement">null</span> || alt == <span class="String">''</span>) <span class="Identifier">{</span>
+                    addError(<span class="Identifier">this</span>, txtAlt);
+                <span class="Identifier">}</span>
+                <span class="Statement">break</span>;
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.2 Diagramm/Lageplan/Organigramm/Wegbeschreibung usw.</span>
+    <span class="Comment">// Check for the words and add info-message</span>
+    <span class="Statement">for</span> (<span class="Identifier">var</span> word <span class="Statement">in</span> wlDiag) <span class="Identifier">{</span>
+        $(<span class="String">'p:contains('</span>+ wlDiag<span class="Identifier">[</span>word<span class="Identifier">]</span> + <span class="String">')'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtDiag1 + wlDiag<span class="Identifier">[</span>word<span class="Identifier">]</span> +
+                txtDiag2 + wlDiag<span class="Identifier">[</span>word<span class="Identifier">]</span> + txtDiag3);
+        <span class="Identifier">}</span>);
+    <span class="Identifier">}</span>
+
+    <span class="Comment">// 2.3 Headings</span>
+    <span class="Comment">// Create a map of the headings, check if 1&gt;2&gt;3 and not 1&gt;3 etc</span>
+    <span class="Identifier">var</span> headingList = <span class="Identifier">[]</span>;
+    <span class="Identifier">var</span> headingCounter = 0;
+    <span class="Identifier">var</span> lastLevel = 0;
+    $(<span class="String">'h1,h2,h3,h4,h5,h6'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> level = parseInt(<span class="Identifier">this</span>.tagName.toString().substring(1, 2));
+
+        <span class="Statement">if</span> (lastLevel != 0) <span class="Identifier">{</span>
+            <span class="Statement">if</span> (level &gt; lastLevel + 1)
+            <span class="Identifier">{</span>
+                headingList<span class="Identifier">[</span>headingCounter<span class="Identifier">]</span> = <span class="Identifier">{</span>
+                    <span class="String">'element'</span>: <span class="Identifier">this</span>,
+                    <span class="String">'lastLevel'</span>: lastLevel ,
+                    <span class="String">'level'</span>: level
+                <span class="Identifier">}</span>;
+                headingCounter++;
+            <span class="Identifier">}</span>
+        <span class="Identifier">}</span>
+        <span class="Statement">if</span> (lastLevel == 0 &amp;&amp; level != 1)<span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtHeading1);
+        <span class="Identifier">}</span>
+        lastLevel = level;
+    <span class="Identifier">}</span>);
+    <span class="Statement">for</span> (h <span class="Statement">in</span> headingList)
+    <span class="Identifier">{</span>
+        addError(headingList<span class="Identifier">[</span>h<span class="Identifier">]</span>.element,txtHeading2 +
+            headingList<span class="Identifier">[</span>h<span class="Identifier">]</span>.lastLevel + txtHeading3 + headingList<span class="Identifier">[</span>h<span class="Identifier">]</span>.level);
+    <span class="Identifier">}</span>
+
+    <span class="Comment">// 2.4 Headings without h1,h2,h3. check if a heading is within a &lt;p&gt; tag </span>
+    $(<span class="String">'p'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+        <span class="Comment">// check if begins with bold &lt;b&gt; tag</span>
+        <span class="Statement">if</span> (html.indexOf(<span class="String">'&lt;b&gt;'</span>) === 0) <span class="Identifier">{</span>
+            <span class="Identifier">var</span> endPos = html.indexOf(<span class="String">'&lt;/b&gt;'</span>);
+            <span class="Statement">if</span> ((endPos - (0.1 * html.length)) &lt;= html.length) <span class="Identifier">{</span>
+                <span class="Comment">// there is at least 10% of the &lt;p&gt;-length not bold</span>
+                <span class="Comment">// so it could be a heading</span>
+                addError(<span class="Identifier">this</span>, txtNoHeading);
+            <span class="Identifier">}</span>
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.5 &lt;p&gt; without content</span>
+    $(<span class="String">'p:empty'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        addError(<span class="Identifier">this</span>, txtEmptyP);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.6. Text outside of &lt;p&gt; use own fake Tag &lt;textWithOutP&gt; for identification</span>
+    $(<span class="String">'body'</span>).contents().filter(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Statement">return</span> <span class="Identifier">this</span>.nodeType == 3 &amp;&amp; $.trim(<span class="Identifier">this</span>.nodeValue) != <span class="String">''</span>;
+    <span class="Identifier">}</span>).wrap(<span class="String">'&lt;textwithoutp&gt;&lt;/textwithoutp&gt;'</span>).end();
+    $(<span class="String">'textwithoutp'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        addError(<span class="Identifier">this</span>, txtParagraph);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.7 &lt;strong&gt; tags are only used within &lt;p&gt; tags</span>
+    $(<span class="String">'strong'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Statement">if</span> (<span class="Identifier">this</span>.parentNode.tagName != <span class="String">'P'</span>) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtStrong);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.8 Check for abbreviations</span>
+    <span class="Comment">// assuming they consist of CAP letters, with length maximum 5</span>
+    <span class="Comment">// abbreviations from the excludedAbbreviations string, should be ignored</span>
+    $(<span class="String">'p'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+        <span class="Identifier">var</span> abbr = html.match(<span class="String">'[A-Z][A-Z][A-Z]?[A-Z]?[A-Z]?'</span>);
+        <span class="Statement">if</span> (abbr != <span class="Statement">null</span> &amp;&amp; abbr.length &gt; 0) <span class="Identifier">{</span>
+            <span class="Statement">if</span> (excludedAbbreviations.indexOf(abbr) == -1) <span class="Identifier">{</span>
+                addError(<span class="Identifier">this</span>, txtAbbrevation);
+            <span class="Identifier">}</span>
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.9 Tables, no header &lt;th&gt; Tag</span>
+    $(<span class="String">'table'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+        <span class="Statement">if</span> (!html.match(<span class="String">'&lt;th&gt;'</span>)) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtTableHeader);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.10 Tables, emtpy rows or columns</span>
+    $(<span class="String">'td:empty'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        addError(<span class="Identifier">this</span>.parentNode.parentNode.parentNode, txtTableEmptyCol)
+    <span class="Identifier">}</span>);
+    $(<span class="String">'tr:empty'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        addError(<span class="Identifier">this</span>.parentNode.parentNode, txtTableEmptyRow);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.11 Tables with special characters</span>
+    $(<span class="String">'table'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+        <span class="Statement">if</span> (html.match(specialCharacters)) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtTableSpecial);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.12 Layout-Tables = no &lt;th&gt;, no content, more than 50% of cells without content</span>
+    $(<span class="String">'table &gt; tbody'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> emptyCells = 0;
+        $(<span class="Identifier">this</span>).children(<span class="String">'tr'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+            $(<span class="Identifier">this</span>).children(<span class="String">'td:empty'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+                $(<span class="Identifier">this</span>).css(<span class="Identifier">{</span>
+                   <span class="String">'border-width'</span>: <span class="String">'1px'</span>,
+                   <span class="String">'border-style'</span>: <span class="String">'solid'</span>,
+                   <span class="String">'border-color'</span>: <span class="String">'black'</span>
+                <span class="Identifier">}</span>);
+                emptyCells++;
+            <span class="Identifier">}</span>);
+        <span class="Identifier">}</span>);
+        <span class="Statement">if</span> (emptyCells &gt; ($(<span class="Identifier">this</span>).children().children(<span class="String">'td'</span>).length / 2) &amp;&amp; $(<span class="Identifier">this</span>).children(<span class="String">'th'</span>).length == 0) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>.parentNode, txtLayoutTable);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.13 Complex tables conditions:</span>
+    <span class="Comment">// - has &lt;colgroup&gt;</span>
+    <span class="Comment">// - has span=</span>
+    <span class="Comment">// - has scope=</span>
+    <span class="Comment">// - has axis=           </span>
+    $(<span class="String">'table'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+
+        <span class="Statement">if</span> (html.indexOf(<span class="String">'&lt;colgroup&gt;'</span>) &gt; 0 ||
+            html.indexOf(<span class="String">'span='</span>) &gt; 0 ||
+            html.indexOf(<span class="String">'scope='</span>) &gt; 0 ||
+            html.indexOf(<span class="String">'axis='</span>) &gt; 0)
+        <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtComplexTable);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.14 Check for lists with - * and → within &lt;p&gt; Tags or at the beginning of a &lt;p&gt;</span>
+    $(<span class="String">'p'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> hasErr = <span class="Boolean">false</span>;
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+
+        <span class="Statement">if</span> (html.substring(0,1) == <span class="String">'-'</span> ||
+            html.substring(0,1) == <span class="String">'*'</span> ||
+            html.substring(0,1) == <span class="String">'→'</span>) <span class="Identifier">{</span>
+                hasErr = <span class="Boolean">true</span>;
+        <span class="Identifier">}</span>
+
+        <span class="Identifier">var</span> matches = html.match(<span class="String">/-[A-Za-z0-9]*/g</span>);
+        <span class="Statement">if</span> (matches != <span class="Statement">null</span> &amp;&amp; matches.length &gt; 3) <span class="Identifier">{</span>
+            hasErr = <span class="Boolean">true</span>;
+        <span class="Identifier">}</span>
+        matches = html.match(<span class="String">/\*[A-Za-z0-9]*/g</span>);
+        <span class="Statement">if</span> (matches != <span class="Statement">null</span> &amp;&amp; matches.length &gt; 3) <span class="Identifier">{</span>
+            hasErr = <span class="Boolean">true</span>;
+        <span class="Identifier">}</span>
+        matches = html.match(<span class="String">/→[A-Za-z0-9]*/g</span>);
+        <span class="Statement">if</span> (matches != <span class="Statement">null</span> &amp;&amp; matches.length &gt; 3) <span class="Identifier">{</span>
+            hasErr = <span class="Boolean">true</span>;
+        <span class="Identifier">}</span>
+
+        <span class="Statement">if</span> (hasErr) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtList);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+
+    <span class="Comment">// 2.15 Video-content</span>
+    $(<span class="String">'a'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> href = <span class="Identifier">this</span>.getAttribute(<span class="String">'href'</span>) == <span class="Statement">null</span> ? <span class="Statement">null</span> : <span class="Identifier">this</span>.getAttribute(<span class="String">'href'</span>).toString();
+        <span class="Statement">if</span> (href != <span class="Statement">null</span> &amp;&amp; href.match(videotypes)) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtVideo);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+    $(<span class="String">'embed'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> src = <span class="Identifier">this</span>.getAttribute(<span class="String">'src'</span>) == <span class="Statement">null</span> ? <span class="Statement">null</span> : <span class="Identifier">this</span>.getAttribute(<span class="String">'src'</span>).toString();
+        <span class="Statement">if</span> (src != <span class="Statement">null</span> &amp;&amp; src.match(embedVideo)) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtVideo);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+    $(<span class="String">'video'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        addError(<span class="Identifier">this</span>, txtVideo);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.16 Audio-content</span>
+    $(<span class="String">'embed'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> src = <span class="Identifier">this</span>.getAttribute(<span class="String">'src'</span>) == <span class="Statement">null</span> ? <span class="Statement">null</span> : <span class="Identifier">this</span>.getAttribute(<span class="String">'src'</span>).toString();
+        <span class="Statement">if</span> (src != <span class="Statement">null</span> &amp;&amp; src.match(audiotypes)) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtAudio);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+    $(<span class="String">'audio'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        addError(<span class="Identifier">this</span>, txtAudio);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.17 Link naming</span>
+    $(<span class="String">'a'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> html = <span class="Identifier">this</span>.innerHTML.toString();
+        <span class="Statement">if</span> (html.match(shortLinks) &amp;&amp; html.length &lt; 8) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtLinkDescription);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.18 Links with file-downloads</span>
+    $(<span class="String">'a'</span>).each(<span class="Identifier">function</span>()<span class="Identifier">{</span>
+        <span class="Identifier">var</span> href = href = <span class="Identifier">this</span>.getAttribute(<span class="String">'href'</span>) == <span class="Statement">null</span> ? <span class="Statement">null</span> : <span class="Identifier">this</span>.getAttribute(<span class="String">'href'</span>).toString();
+        <span class="Statement">if</span> (href != <span class="Statement">null</span> &amp;&amp; href.match(filetypes)) <span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtLinkFile);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// 2.19 PDF info</span>
+    $(<span class="String">'a'</span>).each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> href = <span class="Identifier">this</span>.getAttribute(<span class="String">'href'</span>) == <span class="Statement">null</span> ? <span class="Statement">null</span> : <span class="Identifier">this</span>.getAttribute(<span class="String">'href'</span>).toString();
+        <span class="Statement">if</span> (href != <span class="Statement">null</span> &amp;&amp; href.match(<span class="String">'.pdf'</span>))<span class="Identifier">{</span>
+            addError(<span class="Identifier">this</span>, txtPDF);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// Print the results to the pg-footer</span>
+    printResults();
+<span class="Identifier">}</span>
+
+<span class="Comment">// Support functions</span>
+<span class="Comment">// --------------------------------------------------------------------------------------------</span>
+
+<span class="Identifier">function</span> addError(element, message)
+<span class="Identifier">{</span>
+    <span class="Identifier">var</span> id = <span class="String">'pg_result_general'</span>;
+    <span class="Identifier">var</span> offset = 0;
+
+    <span class="Statement">if</span> (element != <span class="Statement">null</span>)
+    <span class="Identifier">{</span>
+        id = element.getAttribute(<span class="String">'id'</span>);
+        <span class="Statement">if</span> (id == <span class="Statement">null</span> || id == <span class="String">''</span>)
+        <span class="Identifier">{</span>
+            element.setAttribute(<span class="String">'id'</span>, <span class="String">'element'</span> + itemNr);
+            id = <span class="String">'element'</span> + itemNr;
+            itemNr++;
+        <span class="Identifier">}</span>
+
+        offset = element.offsetTop;
+        <span class="Statement">if</span> (offset == <span class="Statement">null</span> || offset == <span class="String">''</span>) <span class="Identifier">{</span>
+            offset = 0;
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>
+
+    <span class="Comment">// check for duplicates (for example areas in image-map)</span>
+    <span class="Identifier">var</span> duplicate = <span class="Boolean">false</span>;
+    <span class="Statement">for</span> (<span class="Identifier">var</span> e <span class="Statement">in</span> resultList)<span class="Identifier">{</span>
+        <span class="Statement">if</span> (resultList<span class="Identifier">[</span>e<span class="Identifier">]</span>.elementID == id &amp;&amp;
+            resultList<span class="Identifier">[</span>e<span class="Identifier">]</span>.elementMessage == message)<span class="Identifier">{</span>
+            duplicate = <span class="Boolean">true</span>;
+            <span class="Statement">break</span>;
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>
+
+    <span class="Statement">if</span> (!duplicate)<span class="Identifier">{</span>
+        resultList<span class="Identifier">[</span>resultCounter<span class="Identifier">]</span> = <span class="Identifier">{</span>
+            <span class="String">'elementID'</span>: id,
+            <span class="String">'elementPos'</span>: offset,
+            <span class="String">'elementMessage'</span>: message
+        <span class="Identifier">}</span>;
+        resultCounter++;
+    <span class="Identifier">}</span>
+<span class="Identifier">}</span>
+
+<span class="Identifier">function</span> printResults()
+<span class="Identifier">{</span>
+    <span class="Comment">// Sort lists according to their position within the page</span>
+    <span class="Comment">// and combine messages for each element   </span>
+    <span class="Identifier">var</span> sortedCounter = 0;
+    <span class="Statement">for</span> (u <span class="Statement">in</span> resultList) <span class="Identifier">{</span>
+        <span class="Identifier">var</span> presentPos = -1;
+        <span class="Comment">// dont combine messages within pg_result_general</span>
+        <span class="Statement">if</span> (resultList<span class="Identifier">[</span>u<span class="Identifier">]</span>.elementID != <span class="String">'pg_result_general'</span>) <span class="Identifier">{</span>
+            <span class="Statement">for</span> (s <span class="Statement">in</span> resultListSorted)
+            <span class="Identifier">{</span>
+                <span class="Statement">if</span> (resultListSorted<span class="Identifier">[</span>s<span class="Identifier">]</span>.elementID == resultList<span class="Identifier">[</span>u<span class="Identifier">]</span>.elementID) <span class="Identifier">{</span>
+                    presentPos = s;
+                    <span class="Statement">break</span>;
+                <span class="Identifier">}</span>
+            <span class="Identifier">}</span>
+        <span class="Identifier">}</span>
+
+        <span class="Statement">if</span> (presentPos == -1) <span class="Identifier">{</span>
+            <span class="Comment">// add new entry</span>
+            resultListSorted<span class="Identifier">[</span>sortedCounter<span class="Identifier">]</span> = <span class="Identifier">{</span>
+                <span class="String">'elementID'</span>: resultList<span class="Identifier">[</span>u<span class="Identifier">]</span>.elementID,
+                <span class="String">'elementPos'</span>: resultList<span class="Identifier">[</span>u<span class="Identifier">]</span>.elementPos,
+                <span class="String">'elementMessage'</span>: resultList<span class="Identifier">[</span>u<span class="Identifier">]</span>.elementMessage
+            <span class="Identifier">}</span>;
+            sortedCounter++;
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+            <span class="Comment">// add message to present element</span>
+            resultListSorted<span class="Identifier">[</span>s<span class="Identifier">]</span>.elementMessage = resultListSorted<span class="Identifier">[</span>s<span class="Identifier">]</span>.elementMessage + <span class="String">' '</span> + resultList<span class="Identifier">[</span>u<span class="Identifier">]</span>.elementMessage;
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>
+
+    <span class="Comment">// sort the sortedList</span>
+    resultListSorted.sort(<span class="Identifier">function</span>(a,b)<span class="Identifier">{</span>
+        <span class="Statement">return</span> a.elementPos - b.elementPos
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// print results</span>
+    <span class="Identifier">var</span> resultHtml = <span class="String">'&lt;ul id=&quot;tlyPageGuide&quot; data-tourtitle=&quot;Fehler/Hinweisliste&quot;&gt;'</span>;
+    <span class="Statement">for</span> (m <span class="Statement">in</span> resultListSorted)
+    <span class="Identifier">{</span>
+        resultHtml += <span class="String">'&lt;li class=&quot;tlypageguide_bottom&quot; data-tourtarget=&quot;#'</span>;
+        resultHtml += resultListSorted<span class="Identifier">[</span>m<span class="Identifier">]</span>.elementID;
+        resultHtml += <span class="String">'&quot;&gt;&lt;div&gt;'</span>;
+        resultHtml += resultListSorted<span class="Identifier">[</span>m<span class="Identifier">]</span>.elementMessage;
+        resultHtml += <span class="String">'&lt;/div&gt;&lt;/li&gt;'</span>;
+    <span class="Identifier">}</span>
+    resultHtml += <span class="String">'&lt;/ul&gt;'</span>
+    $(<span class="String">'#pg_result_footer'</span>).html(resultHtml);
+
+    <span class="Comment">// Run pageguide</span>
+    tl.pg.init();
+<span class="Identifier">}</span>
+
+
+<span class="Comment">// Extension-Code</span>
+<span class="Comment">// --------------------------------------------------------------------------------------------</span>
+
+<span class="Comment">// ## Pageguide ##</span>
+tl = <span class="Statement">window</span>.tl || <span class="Identifier">{}</span>;
+tl.pg = tl.pg || <span class="Identifier">{}</span>;
+
+tl.pg.default_prefs = <span class="Identifier">{</span>
+    <span class="String">'auto_show_first'</span>: <span class="Boolean">true</span>,
+    <span class="String">'loading_selector'</span> : <span class="String">'#loading'</span>,
+    <span class="String">'track_events_cb'</span>: <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Statement">return</span>;
+    <span class="Identifier">}</span>
+<span class="Identifier">}</span>;
+
+tl.pg.init = <span class="Identifier">function</span>(preferences) <span class="Identifier">{</span>
+    <span class="Comment">/* page guide object, for pages that have one */</span>
+    <span class="Statement">if</span> (jQuery(<span class="String">&quot;#tlyPageGuide&quot;</span>).length === 0) <span class="Identifier">{</span>
+        <span class="Statement">return</span>;
+    <span class="Identifier">}</span>
+
+    <span class="Identifier">var</span> guide   = jQuery(<span class="String">&quot;#tlyPageGuide&quot;</span>),
+    wrapper = jQuery(<span class="String">'&lt;div&gt;'</span>, <span class="Identifier">{</span>
+        id: <span class="String">'tlyPageGuideWrapper'</span>
+    <span class="Identifier">}</span>),
+    message = jQuery(<span class="String">'&lt;div&gt;'</span>, <span class="Identifier">{</span>
+        id: <span class="String">'tlyPageGuideMessages'</span>
+    <span class="Identifier">}</span>);
+
+    message.append(<span class="String">'&lt;a href=&quot;#&quot; class=&quot;tlypageguide_close&quot; title=&quot;Schliesse CAC&quot;&gt;Ende&lt;/a&gt;'</span>)
+    .append(<span class="String">'&lt;span&gt;&lt;/span&gt;'</span>)
+    .append(<span class="String">'&lt;div&gt;&lt;/div&gt;'</span>)
+    .append(<span class="String">'&lt;a href=&quot;#&quot; class=&quot;tlypageguide_back&quot; title=&quot;Next&quot;&gt;Letztes&lt;/a&gt;'</span>)
+    .append(<span class="String">'&lt;a href=&quot;#&quot; class=&quot;tlypageguide_fwd&quot; title=&quot;Next&quot;&gt;Nächstes&lt;/a&gt;'</span>);
+
+    jQuery(<span class="String">'&lt;div/&gt;'</span>, <span class="Identifier">{</span>
+        <span class="String">'title'</span>: <span class="String">'CAC starten'</span>,
+        <span class="String">'class'</span>: <span class="String">'tlypageguide_toggle'</span>
+    <span class="Identifier">}</span>).append(<span class="String">'Checker'</span>)
+    .append(<span class="String">'&lt;div&gt;&lt;span&gt;'</span> + guide.data(<span class="String">'tourtitle'</span>) + <span class="String">'&lt;/span&gt;&lt;/div&gt;'</span>)
+    .append(<span class="String">'&lt;a href=&quot;javascript:void(0);&quot; title=&quot;Schliesse CAC&quot;&gt;CAC schliessen &amp;raquo;&lt;/a&gt;'</span>).appendTo(wrapper);
+
+    wrapper.append(guide);
+    wrapper.append(message);
+    jQuery(<span class="String">'body'</span>).append(wrapper);
+
+    <span class="Identifier">var</span> pg = <span class="Statement">new</span> tl.pg.PageGuide(jQuery(<span class="String">'#tlyPageGuideWrapper'</span>), preferences);
+    pg.ready(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        pg.setup_handlers();
+        pg.$base.children(<span class="String">&quot;.tlypageguide_toggle&quot;</span>).animate(<span class="Identifier">{</span>
+            <span class="String">&quot;right&quot;</span>: <span class="String">&quot;-120px&quot;</span>
+        <span class="Identifier">}</span>, 250);
+        <span class="Comment">// RLE: auto-open pageguide at start</span>
+        pg.open();
+        <span class="Comment">// RLE</span>
+    <span class="Identifier">}</span>);
+    <span class="Statement">return</span> pg;
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide = <span class="Identifier">function</span> (pg_elem, preferences) <span class="Identifier">{</span>
+    <span class="Identifier">this</span>.preferences = jQuery.extend(<span class="Identifier">{}</span>, tl.pg.default_prefs, preferences);
+    <span class="Identifier">this</span>.$base = pg_elem;
+    <span class="Identifier">this</span>.$all_items = jQuery(<span class="String">'#tlyPageGuide &gt; li'</span>, <span class="Identifier">this</span>.$base);
+    <span class="Identifier">this</span>.$items = jQuery(<span class="Identifier">[]</span>); <span class="Comment">/* fill me with visible elements on pg expand */</span>
+    <span class="Identifier">this</span>.$message = jQuery(<span class="String">'#tlyPageGuideMessages'</span>);
+    <span class="Identifier">this</span>.$fwd = jQuery(<span class="String">'a.tlypageguide_fwd'</span>, <span class="Identifier">this</span>.$base);
+    <span class="Identifier">this</span>.$back = jQuery(<span class="String">'a.tlypageguide_back'</span>, <span class="Identifier">this</span>.$base);
+    <span class="Identifier">this</span>.cur_idx = 0;
+    <span class="Identifier">this</span>.track_event = <span class="Identifier">this</span>.preferences.track_events_cb;
+<span class="Identifier">}</span>;
+
+tl.pg.isScrolledIntoView = <span class="Identifier">function</span>(elem) <span class="Identifier">{</span>
+    <span class="Identifier">var</span> dvtop = jQuery(<span class="Statement">window</span>).scrollTop(),
+    dvbtm = dvtop + jQuery(<span class="Statement">window</span>).height(),
+    eltop = jQuery(elem).offset().<span class="Statement">top</span>,
+    elbtm = eltop + jQuery(elem).height();
+
+    <span class="Statement">return</span> (elbtm &gt;= dvtop) &amp;&amp; (eltop &lt;= dvbtm - 100);
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide.prototype.ready = <span class="Identifier">function</span>(callback) <span class="Identifier">{</span>
+    <span class="Identifier">var</span> that = <span class="Identifier">this</span>,
+    interval = <span class="Statement">window</span>.setInterval(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Statement">if</span> (!jQuery(that.preferences.loading_selector).is(<span class="String">':visible'</span>)) <span class="Identifier">{</span>
+            callback();
+            clearInterval(interval);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>, 250);
+    <span class="Statement">return</span> <span class="Identifier">this</span>;
+<span class="Identifier">}</span>;
+
+<span class="Comment">/* to be executed on pg expand */</span>
+tl.pg.PageGuide.prototype._on_expand = <span class="Identifier">function</span> () <span class="Identifier">{</span>
+    <span class="Identifier">var</span> that = <span class="Identifier">this</span>,
+    $d = <span class="Statement">document</span>,
+    $w = <span class="Statement">window</span>;
+
+    <span class="Comment">/* set up initial state */</span>
+    <span class="Identifier">this</span>.position_tour();
+    <span class="Identifier">this</span>.cur_idx = 0;
+
+    <span class="Comment">// create a new stylesheet:</span>
+    <span class="Identifier">var</span> ns = $d.createElement(<span class="String">'style'</span>);
+    $d.getElementsByTagName(<span class="String">'head'</span>)<span class="Identifier">[</span>0<span class="Identifier">]</span>.appendChild(ns);
+
+    <span class="Comment">// keep Safari happy</span>
+    <span class="Statement">if</span> (!$w.createPopup) <span class="Identifier">{</span>
+        ns.appendChild($d.createTextNode(<span class="String">''</span>));
+        ns.setAttribute(<span class="String">&quot;type&quot;</span>, <span class="String">&quot;text/css&quot;</span>);
+    <span class="Identifier">}</span>
+
+    <span class="Comment">// get a pointer to the stylesheet you just created</span>
+    <span class="Identifier">var</span> sh = $d.styleSheets<span class="Identifier">[</span>$d.styleSheets.length - 1<span class="Identifier">]</span>;
+
+    <span class="Comment">// space for IE rule set</span>
+    <span class="Identifier">var</span> ie = <span class="String">&quot;&quot;</span>;
+
+    <span class="Comment">/* add number tags and PG shading elements */</span>
+    <span class="Identifier">this</span>.$items.each(<span class="Identifier">function</span>(i) <span class="Identifier">{</span>
+        <span class="Identifier">var</span> $p = jQuery(jQuery(<span class="Identifier">this</span>).data(<span class="String">'tourtarget'</span>) + <span class="String">&quot;:visible:first&quot;</span>);
+        $p.addClass(<span class="String">&quot;tlypageguide_shadow tlypageguide_shadow&quot;</span> + i);
+
+        <span class="Identifier">var</span> node_text = <span class="String">'.tlypageguide_shadow'</span> + i + <span class="String">':after { height: '</span> +
+        $p.outerHeight() + <span class="String">'px; width: '</span> + $p.outerWidth(<span class="Boolean">false</span>) + <span class="String">'px; }'</span>;
+
+        <span class="Statement">if</span> (!$w.createPopup) <span class="Identifier">{</span>
+            <span class="Comment">// modern browsers</span>
+            <span class="Identifier">var</span> k = $d.createTextNode(node_text, 0);
+            ns.appendChild(k);
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+            <span class="Comment">// for IE</span>
+            ie += node_text;
+        <span class="Identifier">}</span>
+
+        jQuery(<span class="Identifier">this</span>).prepend(<span class="String">'&lt;ins&gt;'</span> + (i + 1) + <span class="String">'&lt;/ins&gt;'</span>);
+        jQuery(<span class="Identifier">this</span>).data(<span class="String">'idx'</span>, i);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">// is IE? slam styles in all at once:</span>
+    <span class="Statement">if</span> ($w.createPopup) <span class="Identifier">{</span>
+        sh.cssText = ie;
+    <span class="Identifier">}</span>
+
+    <span class="Comment">/* decide to show first? */</span>
+    <span class="Statement">if</span> (<span class="Identifier">this</span>.preferences.auto_show_first &amp;&amp; <span class="Identifier">this</span>.$items.length &gt; 0) <span class="Identifier">{</span>
+        <span class="Identifier">this</span>.show_message(0);
+    <span class="Identifier">}</span>
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide.prototype.open = <span class="Identifier">function</span>() <span class="Identifier">{</span>
+    <span class="Identifier">this</span>.track_event(<span class="String">'PG.open'</span>);
+
+    <span class="Identifier">this</span>._on_expand();
+    <span class="Identifier">this</span>.$items.toggleClass(<span class="String">'expanded'</span>);
+    jQuery(<span class="String">'body'</span>).addClass(<span class="String">'tlypageguide-open'</span>);
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide.prototype.close = <span class="Identifier">function</span>() <span class="Identifier">{</span>
+    <span class="Identifier">this</span>.track_event(<span class="String">'PG.close'</span>);
+
+    <span class="Identifier">this</span>.$items.toggleClass(<span class="String">'expanded'</span>);
+    <span class="Identifier">this</span>.$message.animate(<span class="Identifier">{</span>
+        height: <span class="String">&quot;0&quot;</span>
+    <span class="Identifier">}</span>, 500, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        jQuery(<span class="Identifier">this</span>).hide();
+    <span class="Identifier">}</span>);
+    <span class="Comment">/* clear number tags and shading elements */</span>
+    jQuery(<span class="String">'ins'</span>).remove();
+    jQuery(<span class="String">'body'</span>).removeClass(<span class="String">'tlypageguide-open'</span>);
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide.prototype.setup_handlers = <span class="Identifier">function</span> () <span class="Identifier">{</span>
+    <span class="Identifier">var</span> that = <span class="Identifier">this</span>;
+
+    <span class="Comment">/* interaction: open/close PG interface */</span>
+    jQuery(<span class="String">'.tlypageguide_toggle'</span>, <span class="Identifier">this</span>.$base).live(<span class="String">'click'</span>, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Statement">if</span> (jQuery(<span class="String">'body'</span>).is(<span class="String">'.tlypageguide-open'</span>)) <span class="Identifier">{</span>
+            that.close();
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+            that.open();
+        <span class="Identifier">}</span>
+        <span class="Statement">return</span> <span class="Boolean">false</span>;
+    <span class="Identifier">}</span>);
+
+    jQuery(<span class="String">'.tlypageguide_close'</span>, <span class="Identifier">this</span>.$message).live(<span class="String">'click'</span>, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        that.close();
+        <span class="Statement">return</span> <span class="Boolean">false</span>;
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">/* interaction: item click */</span>
+    <span class="Identifier">this</span>.$all_items.live(<span class="String">'click'</span>, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> new_index = jQuery(<span class="Identifier">this</span>).data(<span class="String">'idx'</span>);
+
+        that.track_event(<span class="String">'PG.specific_elt'</span>);
+        that.show_message(new_index);
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">/* interaction: fwd/back click */</span>
+    <span class="Identifier">this</span>.$fwd.live(<span class="String">'click'</span>, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> new_index = (that.cur_idx + 1) % that.$items.length;
+
+        that.track_event(<span class="String">'PG.fwd'</span>);
+        that.show_message(new_index);
+        <span class="Statement">return</span> <span class="Boolean">false</span>;
+    <span class="Identifier">}</span>);
+
+    <span class="Identifier">this</span>.$back.live(<span class="String">'click'</span>, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Comment">/*</span>
+<span class="Comment">         * If -n &lt; x &lt; 0, then the result of x % n will be x, which is</span>
+<span class="Comment">         * negative. To get a positive remainder, compute (x + n) % n.</span>
+<span class="Comment">         */</span>
+        <span class="Identifier">var</span> new_index = (that.cur_idx + that.$items.length - 1) % that.$items.length;
+
+        that.track_event(<span class="String">'PG.back'</span>);
+        that.show_message(new_index, <span class="Boolean">true</span>);
+        <span class="Statement">return</span> <span class="Boolean">false</span>;
+    <span class="Identifier">}</span>);
+
+    <span class="Comment">/* register resize callback */</span>
+    jQuery(<span class="Statement">window</span>).resize(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        that.position_tour();
+    <span class="Identifier">}</span>);
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide.prototype.show_message = <span class="Identifier">function</span> (new_index, left) <span class="Identifier">{</span>
+    <span class="Identifier">var</span> old_idx = <span class="Identifier">this</span>.cur_idx,
+    old_item = <span class="Identifier">this</span>.$items<span class="Identifier">[</span>old_idx<span class="Identifier">]</span>,
+    new_item = <span class="Identifier">this</span>.$items<span class="Identifier">[</span>new_index<span class="Identifier">]</span>;
+
+    <span class="Identifier">this</span>.cur_idx = new_index;
+
+    jQuery(<span class="String">'div'</span>, <span class="Identifier">this</span>.$message).html(jQuery(new_item).children(<span class="String">'div'</span>).html());
+    <span class="Identifier">this</span>.$items.removeClass(<span class="String">&quot;tlypageguide-active&quot;</span>);
+    jQuery(new_item).addClass(<span class="String">&quot;tlypageguide-active&quot;</span>);
+
+    <span class="Comment">// RLE</span>
+    <span class="Identifier">var</span> general = jQuery(new_item).attr(<span class="String">'data-tourtarget'</span>).toString().indexOf(<span class="String">'pg_result_general'</span>) &gt; 0;
+    <span class="Comment">// RLE</span>
+
+    <span class="Statement">if</span> (!tl.pg.isScrolledIntoView(jQuery(new_item))) <span class="Identifier">{</span>
+        jQuery(<span class="String">'html,body'</span>).animate(<span class="Identifier">{</span>
+            scrollTop: jQuery(new_item).offset().<span class="Statement">top</span> - 50
+            <span class="Identifier">}</span>, 500);
+    <span class="Identifier">}</span>
+
+    <span class="Identifier">this</span>.$message.not(<span class="String">':visible'</span>).show().animate(<span class="Identifier">{</span>
+        <span class="String">'height'</span>: <span class="String">'100px'</span>
+    <span class="Identifier">}</span>, 500);
+
+    <span class="Comment">// RLE added param general</span>
+    <span class="Identifier">this</span>.roll_number(jQuery(<span class="String">'span'</span>, <span class="Identifier">this</span>.$message), jQuery(new_item).children(<span class="String">'ins'</span>).html(), left, general);
+<span class="Identifier">}</span>;
+
+<span class="Comment">// Added param general</span>
+tl.pg.PageGuide.prototype.roll_number = <span class="Identifier">function</span> (num_wrapper, new_text, left, general) <span class="Identifier">{</span>
+    num_wrapper.animate(<span class="Identifier">{</span>
+        <span class="String">'text-indent'</span>: (left ? <span class="String">''</span> : <span class="String">'-'</span>) + <span class="String">'50px'</span>
+    <span class="Identifier">}</span>, <span class="String">'fast'</span>, <span class="Identifier">function</span>() <span class="Identifier">{</span>
+        num_wrapper.html(new_text);
+
+        <span class="Comment">// RLE</span>
+        <span class="Statement">if</span> (general) <span class="Identifier">{</span>
+            num_wrapper.css(<span class="Identifier">{</span>
+               <span class="String">'background'</span>: <span class="String">'rgba(255, 140, 0, 0.95)'</span>
+            <span class="Identifier">}</span>);
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+            num_wrapper.css(<span class="Identifier">{</span>
+               <span class="String">'background'</span>: <span class="String">'rgba(247, 0, 119, 0.95)'</span>
+            <span class="Identifier">}</span>);
+        <span class="Identifier">}</span>
+        <span class="Comment">// RLE</span>
+
+        num_wrapper.css(<span class="Identifier">{</span>
+            <span class="String">'text-indent'</span>: (left ? <span class="String">'-'</span> : <span class="String">''</span>) + <span class="String">'50px'</span>
+        <span class="Identifier">}</span>, <span class="String">'fast'</span>).animate(<span class="Identifier">{</span>
+            <span class="String">'text-indent'</span>: <span class="String">&quot;0&quot;</span>
+        <span class="Identifier">}</span>, <span class="String">'fast'</span>);
+    <span class="Identifier">}</span>);
+<span class="Identifier">}</span>;
+
+tl.pg.PageGuide.prototype.position_tour = <span class="Identifier">function</span> () <span class="Identifier">{</span>
+    <span class="Comment">/* set PG element positions for visible tourtargets */</span>
+    <span class="Identifier">this</span>.$items = <span class="Identifier">this</span>.$all_items.filter(<span class="Identifier">function</span> () <span class="Identifier">{</span>
+        <span class="Statement">return</span> jQuery(jQuery(<span class="Identifier">this</span>).data(<span class="String">'tourtarget'</span>)).is(<span class="String">':visible'</span>);
+    <span class="Identifier">}</span>);
+
+    <span class="Identifier">this</span>.$items.each(<span class="Identifier">function</span>() <span class="Identifier">{</span>
+        <span class="Identifier">var</span> arrow   = jQuery(<span class="Identifier">this</span>),
+        target  = jQuery(arrow.data(<span class="String">'tourtarget'</span>)).filter(<span class="String">':visible:first'</span>),
+        setLeft = target.offset().left,
+        setTop  = target.offset().<span class="Statement">top</span>;
+
+        <span class="Statement">if</span> (arrow.hasClass(<span class="String">&quot;tlypageguide_top&quot;</span>)) <span class="Identifier">{</span>
+            setTop -= 60;
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Statement">if</span> (arrow.hasClass(<span class="String">&quot;tlypageguide_bottom&quot;</span>)) <span class="Identifier">{</span>
+            setTop += target.outerHeight() + 15;
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+            setTop += 5;
+        <span class="Identifier">}</span>
+
+        <span class="Statement">if</span> (arrow.hasClass(<span class="String">&quot;tlypageguide_right&quot;</span>)) <span class="Identifier">{</span>
+            setLeft += target.outerWidth(<span class="Boolean">false</span>) + 15;
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Statement">if</span> (arrow.hasClass(<span class="String">&quot;tlypageguide_left&quot;</span>)) <span class="Identifier">{</span>
+            setLeft -= 65;
+        <span class="Identifier">}</span> <span class="Statement">else</span> <span class="Identifier">{</span>
+            setLeft += 5;
+        <span class="Identifier">}</span>
+
+        arrow.css(<span class="Identifier">{</span>
+            <span class="String">&quot;left&quot;</span>: setLeft + <span class="String">&quot;px&quot;</span>,
+            <span class="String">&quot;top&quot;</span>: setTop + <span class="String">&quot;px&quot;</span>
+        <span class="Identifier">}</span>);
+
+        <span class="Comment">// RLE hide elements with target-id 'pg_result_general'</span>
+        <span class="Statement">if</span> (target<span class="Identifier">[</span>0<span class="Identifier">]</span>.id == <span class="String">'pg_result_general'</span>) <span class="Identifier">{</span>
+            arrow.css(<span class="Identifier">{</span>
+                visibility:<span class="String">&quot;hidden&quot;</span>
+            <span class="Identifier">}</span>);
+        <span class="Identifier">}</span>
+    <span class="Identifier">}</span>);
+<span class="Identifier">}</span>;
+</pre>
+</body>
+</html>
