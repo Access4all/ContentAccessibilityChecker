@@ -1,0 +1,39 @@
+// Params ENGLISH
+var wlDiag = [ 'diagram', 'organigram', 'site plan', 'city plan', 'site map', 'city map', 'plan of site', 'location plan', 'location map', 'directions' ];
+var excludedAbbreviations = 'CHF,EUR,USD,CAD,GBP';
+var shortLinks = '(here|Here|Next|next|click|Click|More|more)';
+
+// Page error-messages ENGLISH
+var txtIntroduction = 'Content Accessibility Checker advises users of actual and possible accessibility issues in the html code. At the beginning general advices on web accessibility are displayed (orange). Then specific errors and notes are given at the respective locations (pink). For more information on errors/notes please refer to <a href="http://www.accessibility-checklist.ch/">Accessibility-Checkliste</a>.';
+var txtContrast = 'General advice: Make sure the page comes with sufficient contrasts in text, forms and also in images.';
+var txtColors = 'General advice: Make sure information is never communicated by colours only. (e.g. explain textually)';
+var txtComprehend = 'General advice: Write as complicated as necessary - but as simple and clear as possible. (Plain language)';
+
+// Element error-messages ENGLISH
+var txtEmptyP = 'Note: Empty &ltp&gt tags have been found. Please remove';
+var txtAlt = 'Error: Missing text alternative. Add an appropriate alt attribute: alt="xxx".';
+var txtArea = 'Error: Missing or empty alternative text of area. Add an appropriate alt attribute: alt="xxx" for each area.';
+var txtAltEmpty = 'Note: Empty alternative text of the marked element. Make sure to use empty alt attributes only if the element has pure decorative character.';
+var txtAltLink = 'Note: Alternative texts of linked elements must always describe the link purpose.';
+var txtDiag1 = 'Note: \"'; 
+var txtDiag2 = '\" was used in the text. If a ';
+var txtDiag3 = ' is displayed on the page, there must be an explaining text.';
+var txtHeading1 = 'Error: Headings do not start on heading level h1.';
+var txtHeading2 = 'Error: A heading level is skipped. h';
+var txtHeading3 = ' to h';
+var txtParagraph = 'Note: Paragraph is missing appropriate &ltp&gt tag. Please add';
+var txtNoHeading = 'Note: This element looks like a heading? If yes, please add the appropriate &lth&gt tag.';
+var txtStrong = 'Error: &ltstrong&gt tags must only be used within &ltp&gt tags. Check if this is a heading, semantically. Please use &lth1&gt to &lth6&gt tags in this case.';
+var txtAbbrevation = 'Note: These capital letters look like an abbreviation. If yes, please explain, unless the abbreviation is household.';
+var txtTableHeader = 'Error: Tables must always come with column- and row-heading in &ltth&gt tags.';
+var txtTableEmptyCol = 'Error: This table contains empty columns.';
+var txtTableEmptyRow = 'Error: This table contains empty rows.';
+var txtTableSpecial = 'Note: This table contains special characters. Please omit.';
+var txtLayoutTable = 'Note: Is this a layout table? Tables must only be used for structured data, never for layout purposes.';
+var txtComplexTable = 'Note: This look like a complex table. Please add column- and row headings (&ltthead&gt and &ltth&gt tags) and a summary (&ltcaption&gt).';
+var txtList = 'Note: Is it a bullet point we found here? Is it a list? If so, please use correct &ltul&gt&ltli&gt tags.';
+var txtLinkFile = 'Note: Download links must inform of file type and size.';
+var txtPDF = 'Note: PDF files must be accessible. You can check your PDF files for accessibility using the <a href="http://www.access-for-all.ch/en/pdf-lab/pdf-accessibility-checker-pac.html">PDF Accessibility Checker PAC</a>. If you cannot make the PDF accessible, its information must be made available in a different format (e.g. .html, .doc).';
+var txtLinkDescription = 'Note: This link text is very short. Is it meaningful independently of its context?';
+var txtVideo = 'Note: Videos must come with text alternatives and subtitles. This is even more important if the video mediate important information visually only. Further, make sure that the video does not start automatically.';
+var txtAudio = 'Note: Audio content must come with text alternatives. Further, make sure that the video does not start automatically.';
