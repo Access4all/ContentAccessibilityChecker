@@ -281,7 +281,7 @@ In der mediaWiki_CAC.js Datei ist ein Skript hinterlegt, welches ein spezielles 
 ```
 
 **Ergebnis CAC im MediaWiki von Access4all**
-![alt text](https://github.com/Access4all/ContentAccessibilityChecker/raw/master/Images/CACBrowser.png "CACBrowser")
+![Beispiel-Screenshot aus dem MediaWiki von Access4all mit aktiviertem CAC](https://github.com/Access4all/ContentAccessibilityChecker/raw/master/Images/CACBrowser.png "CACBrowser")
 
 
 
