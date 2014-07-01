@@ -37,4 +37,3 @@ var txtPDF = 'Note: PDF files must be accessible. You can check your PDF files f
 var txtLinkDescription = 'Note: This link text is very short. Is it meaningful independently of its context?';
 var txtVideo = 'Note: Videos must come with text alternatives and subtitles. This is even more important if the video mediate important information visually only. Further, make sure that the video does not start automatically.';
 var txtAudio = 'Note: Audio content must come with text alternatives. Further, make sure that the video does not start automatically.';
-var txt3D = 'Note: 3D is not yet supported.';
