@@ -2,7 +2,7 @@ CAC - The Content Accessibility Checker
 =======================================
 
 The Content Accessibility Checker 
-checks web site content with respect to accessibility criteria according to important WCAG 2.0 criteria
+checks web site content with respect to accessibility criteria according to an automatic provable subset of WCAG 2.0 criteria
 and highlights possible accessibility issues directly in the web browser.
 CAC is realized as Firefox plugin (version >=30).
 It was initiated by the swiss based «Access-for-all» foundation (AfA; in german: «Zugang für alle», ZfA),
