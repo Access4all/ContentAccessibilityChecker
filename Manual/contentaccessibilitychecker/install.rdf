@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+	 
+    <Description about="urn:mozilla:install-manifest">
+        <em:id>{1db94723-277d-4282-97bf-9731902b496e}</em:id>
+		<em:name>Content Accessibility Checker</em:name>
+        <em:version>1.3</em:version>
+		<em:type>2</em:type>
+		
+		<em:localized>
+			<Description>
+				<em:locale>en-US</em:locale>
+				<em:name>Content Accessibility Checker</em:name>
+		        <em:description>The Content Accessibility Checker (CAC) advises users of actual and possible accessibility issues in the HTML-code (based on the Web Content Accessibility Guidelines 2.0).</em:description>
+				<em:creator>Reto Lehmann and Jan Portner</em:creator>
+				<em:homepageURL>http://www.access-for-all.ch/en</em:homepageURL>
+			</Description>
+		</em:localized>
+		
+		<em:localized>
+			<Description>
+				<em:locale>de-DE</em:locale>
+				<em:name>Content Accessibility Checker</em:name>
+		        <em:description>Der Content Accessibility Checker (CAC) zeigt Benutzern aktuelle oder m&#246;gliche Accessibility Plobleme im HTML-Code (basierend auf den Web Content Accessibility Guidelines 2.0).</em:description>
+				<em:creator>Reto Lehmann und Jan Portner</em:creator>
+				<em:homepageURL>http://www.access-for-all.ch</em:homepageURL>
+			</Description>
+		</em:localized>
+		
+        <em:targetApplication>
+            <Description>
+                <!-- Firefox -->
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>2.0</em:minVersion>
+                <em:maxVersion>32.0</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+    </Description>
+</RDF>

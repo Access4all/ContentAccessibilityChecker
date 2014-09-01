@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://contentaccessibilitychecker/skin/skin.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://contentaccessibilitychecker/locale/cacDoc.dtd">
+
+
+<overlay id="contentaccessibilitychecker" 
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script src="contentaccessibilitychecker.js" />
+
+    <toolbarpalette id="BrowserToolbarPalette">
+        <toolbarbutton 
+			id="contentaccessibilitychecker-toolbar-button" 
+			label="&buttonName;" 
+			tooltiptext="&buttonName;" 
+			type="panel"
+            		class="toolbarbutton-1 chromeclass-toolbar-additional">
+				<panel id="mainPanel"
+					type="arrow"
+					level="parent">
+						<vbox id="panelWithButton"  flex="1">
+						  	
+							<hbox id="titleCAC" label="panelHeading">
+								<description value="Content Accessibility Checker" id="menuTitle"/>
+							</hbox>
+							
+			
+							<hbox id="placeHolderH">
+								
+							  <vbox id="optionsCheck" align="left" width="400">
+								<description value="&menuTestCriteria;" id="menuTestCriteria"/>
+  								
+								<button id="buttonTextAlt" label="&buttonTextAlt;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtAreaBool" type="checkbox" checked="true" tooltiptext="&tooltipImageMap;" label="&popupImageMap;" />
+									<menuitem id="txtIMGBool" type="checkbox" checked="true" tooltiptext="&tooltipImages;" label="&popupImages;" />
+									<menuitem id="txtInputBool" type="checkbox" checked="false" tooltiptext="&tooltipInput;" label="&popupInput;" />
+									<menuitem id="txtVideoBool" type="checkbox" checked="false" tooltiptext="&tooltipVideos;" label="&popupVideos;" />
+									<menuitem id="txtAudioBool" type="checkbox" checked="false" tooltiptext="&tooltipAudio;" label="&popupAudio;" />
+								  </menupopup>
+								</button>
+
+  								<button id="buttonMapping" label="&buttonMapping;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtDiaRichBool" type="checkbox" checked="false" tooltiptext="&tooltipDiaRich;" label="&popupDiaRich;" />
+								  </menupopup>								  
+								</button>
+
+								<button id="buttonText" label="&buttonText;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtHeadingBool" type="checkbox" checked="true" tooltiptext="&tooltipHeading;" label="&popupHeading;" />
+									<menuitem id="txtHeadingLevelBool" type="checkbox" checked="true" tooltiptext="&tooltipHeadingLevel;" label="&popupHeadingLevel;" />
+									<menuitem id="txtEmptyPBool" type="checkbox" checked="true" tooltiptext="&tooltipEmptyP;" label="&popupEmptyP;" />
+									<menuitem id="txtParagraphBool" type="checkbox" checked="false" tooltiptext="&tooltipParagraph;" label="&popupParagraph;" />
+									<menuitem id="txtStrongBool" type="checkbox" checked="true" tooltiptext="&tooltipStrong;" label="&popupStrong;" />
+									<menuitem id="txtAbbreviationBool" type="checkbox" checked="true" tooltiptext="&tooltipAbbreviation;" label="&popupAbbreviation;" />
+								  </menupopup>								  
+								</button>
+
+								<button id="buttonTables" label="&buttonTables;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtTableHeadBool" type="checkbox" checked="true" tooltiptext="&tooltipTableHead;" label="&popupTableHead;" />
+									<menuitem id="txtTableColRowBool" type="checkbox" checked="true" tooltiptext="&tooltipTableColRow;" label="&popupTableColRow;" />
+									<menuitem id="txtEmptyTableBool" type="checkbox" checked="true" tooltiptext="&tooltipEmptyTable;" label="&popupEmptyTable;" />
+									<menuitem id="txtSpecialCharBool" type="checkbox" checked="true" tooltiptext="&tooltipSpecialChar;" label="&popupSpecialChar;" />
+									<menuitem id="txtLayoutTableBool" type="checkbox" checked="true" tooltiptext="&tooltipLayoutTable;" label="&popupLayoutTable;" />
+								<!--	<menuitem id="txtComplexTableBool" type="checkbox" checked="true" tooltiptext="&tooltipComplexTable;" label="&popupComplexTable;" /> -->
+								  </menupopup>								  
+								</button>
+
+								<button id="buttonLists" label="&buttonLists;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtListBool" type="checkbox" checked="false" tooltiptext="&tooltipList;" label="&popupList;" />
+								  </menupopup>								  
+								</button>
+
+								<button id="buttonLinks" label="&buttonLinks;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtLinkBool" type="checkbox" checked="true" tooltiptext="&tooltipLink;" label="&popupLink;" />
+									<menuitem id="txtLinkDownloadBool" type="checkbox" checked="true" tooltiptext="&tooltipLinkDownload;" label="&popupLinkDownload;" />
+								  </menupopup>								  
+								</button>
+
+								<button id="buttonPDF" label="&buttonPDF;" type="menu" width="110">
+								  <menupopup position="end_before">
+									<menuitem id="txtPDFBool" type="checkbox" checked="true" tooltiptext="&tooltipPDF;" label="&popupPDF;" />
+								  </menupopup>								  
+								</button>
+								
+							  </vbox>
+							  
+							  <vbox id="generalInfoBox" width="300">
+								<hbox id="generalInfoTitle">
+									<description id="generalInfo">&generalInfo;</description>
+								</hbox>
+								<description id="placeHolderDesc1"/>
+							  	<description id="generalContrast">&generalContrast;</description>
+								<description id="placeHolderDesc2"></description>
+								<description id="generalColors">&generalColors;</description>
+								<description id="placeHolderDesc3"></description>
+								<description id="generalComprehend">&generalComprehend;</description>
+							  </vbox>
+
+							  <vbox id="placeHolderRight" width="10"/>
+							
+							</hbox>
+
+							<hbox id="placeHolderBetween" height="10"/>
+
+							<hbox id="startButton" align="right" oncommand= "
+								contentAccessibilityChecker.configMenu();
+								contentAccessibilityChecker.textStrings();
+								contentAccessibilityChecker.result();
+								contentAccessibilityChecker.scriptInjection();
+								contentAccessibilityChecker.closeClick();">
+								<vbox id="placeHolderDown" width="400"/>	
+								<button id="contentaccessibilitychecker-start-button" label="Start CAC"/>
+								<vbox id="placeHolderRightDown" width="5"/>
+							</hbox>
+						  	
+						</vbox>
+				</panel>
+
+		</toolbarbutton>
+    </toolbarpalette>
+	
+
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="strings" src="chrome://contentaccessibilitychecker/locale/cacProp.properties"/>
+	</stringbundleset>
+	
+</overlay>
+

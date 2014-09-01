@@ -1,0 +1,148 @@
+﻿<!-- Tooltip at the CAC-Icon in the menu bar-->
+	
+	<!ENTITY buttonName "Starts the Content Accessibility Checker">
+
+
+
+<!-- Text for menu caption-->
+	
+	<!ENTITY menuTestCriteria "Test Criteria">
+	
+	<!ENTITY generalInfo "General Information">
+
+
+
+<!-- Text for general information-->
+
+
+	<!ENTITY generalIntroduction "PDF">
+	<!ENTITY generalContrast "- Make sure the page comes with sufficient contrasts in text, forms and also in images.">
+
+
+	<!ENTITY generalColors "- Make sure information is never communicated by colours only. (e.g. explain textually).">
+
+
+	<!ENTITY generalComprehend "- Write as complicated as necessary - but as simple and clear as possible. (Plain language)">
+
+
+
+<!-- Text for buttons-->
+	
+	<!ENTITY buttonTextAlt "Text alternatives">
+	
+	<!ENTITY buttonMapping "Mapping">
+	
+	<!ENTITY buttonText "Text content">
+	
+	<!ENTITY buttonTables "Tables">
+	
+	<!ENTITY buttonLists "Lists">
+	
+	<!ENTITY buttonLinks "Links">
+	
+	<!ENTITY buttonPDF "PDF">
+	
+	
+
+
+<!-- Text für Popupmenüs-->
+
+
+	<!ENTITY popupImageMap "Image maps">
+
+	<!ENTITY popupImages "Images">
+
+	<!ENTITY popupInput "Input fields and input areas">
+
+	<!ENTITY popupVideos "Videos">
+
+	<!ENTITY popupAudio "Audio">
+
+	<!ENTITY popupDiaRich "Diagrams and rich infographics">
+	<!ENTITY popupHeading "Headings">
+
+	<!ENTITY popupHeadingLevel "Headinglevels">
+
+	<!ENTITY popupEmptyP "Empty paragraphs">
+
+	<!ENTITY popupParagraph "Texts without an enclosed Tag">
+
+	<!ENTITY popupStrong "Bold texts">
+
+	<!ENTITY popupAbbreviation "Abbreviations">
+
+
+	<!ENTITY popupTableHead "Table headings">
+
+	<!ENTITY popupTableColRow "Table-row and column headings">
+
+	<!ENTITY popupEmptyTable "Empty table-cells">
+
+	<!ENTITY popupSpecialChar "Special characters">
+
+	<!ENTITY popupLayoutTable "Layout-tables">
+
+	<!ENTITY popupComplexTable "Matrixtables">
+
+	<!ENTITY popupList "Lists">
+
+	<!ENTITY popupLink "Linktexts">
+
+	<!ENTITY popupLinkDownload "Links with file-downloads">
+
+	<!ENTITY popupPDF "PDF-links">
+
+
+<!-- Text für Toolttips-->
+
+
+
+	<!ENTITY tooltipImageMap "Check, if there is an existing text alternative.">
+
+	<!ENTITY tooltipImages "Check, if there are &lt;img&gt;-tags without text alternatives.">
+
+	<!ENTITY tooltipInput "Check, if there are &lt;input&gt;-tags without text alternatives.">
+
+	<!ENTITY tooltipVideos "Check, if there are Videos without a text alternative and/or subtitles.">
+
+	<!ENTITY tooltipAudio "Check, if there are audio-files without text alternatives.">
+
+	<!ENTITY tooltipDiaRich "Check, if there is an existing text explanation when diagrams/site plans/organigrams,etc. are used.">
+
+	<!ENTITY tooltipHeading "Check, if a bold text within a &lt;p&gt;-tag is a heading.">
+
+	<!ENTITY tooltipHeadingLevel "Check, if headings begin at level h1 and do not skip a heading level.">
+
+	<!ENTITY tooltipEmptyP "Check, if there exists an empty &lt;p&gt;-tag.">
+
+	<!ENTITY tooltipParagraph "Check, if there are texts which lay beyond a &lt;p&gt;-Tag (Fake Tag: &lt;textwithoutp&gt;-tag).">
+
+	<!ENTITY tooltipStrong "Check, if &lt;strong&gt;-tags are only used within a &lt;p&gt;-tag.">
+
+	<!ENTITY tooltipAbbreviation "Check, if abbreviations in a text are explained.">
+
+	<!ENTITY tooltipTableHead "Check, if there is an existing table heading.">
+
+	<!ENTITY tooltipTableColRow "Check, if there are existing row- and column headings within a table.">
+
+	<!ENTITY tooltipEmptyTable "Check, if there are empty table cells.">
+
+	<!ENTITY tooltipSpecialChar "Check, if special characters are used within a table.">
+
+	<!ENTITY tooltipLayoutTable "Check, if there are existing layout-tables.">
+
+	<!ENTITY tooltipComplexTable "Check, if there are existing row- and column headings within complex tables.">
+
+	<!ENTITY tooltipList "Check, if enumerations are defined as lists.">
+
+	<!ENTITY tooltipLink "Check, if independent link-texts are comprehensible.">
+
+	<!ENTITY tooltipLinkDownload "Check, if there are information about format and file-size of a file-download-link.">
+
+	<!ENTITY tooltipPDF "Check, if there are existing PDF-links.">
+
+
+
+
+
+

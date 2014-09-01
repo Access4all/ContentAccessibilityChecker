@@ -1,0 +1,11 @@
+content contentaccessibilitychecker	content/
+content contentaccessibilitychecker	content/ contentaccessible=yes
+overlay	chrome://browser/content/browser.xul	chrome://contentaccessibilitychecker/content/browser.xul
+
+skin	contentaccessibilitychecker	classic/1.0	skin/
+locale	contentaccessibilitychecker de		locale/de/
+locale	contentaccessibilitychecker en		locale/en/
+style	chrome://global/content/customizeToolbar.xul	chrome://contentaccessibilitychecker/skin/skin.css		chrome://contentaccessibilitychecker/skin/checker.css
+
+
+
