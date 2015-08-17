@@ -15,9 +15,8 @@ Licence:
  * Access4all, Zugang für alle, Schweizerische Stiftung zur behindertengerechten Technologienutzung
  *
  * Copyright 2013, 2014 Access4all
- * Free to use under Creative Commons License: Access4all 3.0 Schweiz (CC BY 3.0 CH)
- * http://creativecommons.org/licenses/by/3.0/ch/legalcode.de
- *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation:
+ * http://www.gnu.org/licenses/gpl.html
  * Contributing Authors: Access4all Team, Reto Lehmann (2013, wirtschaft.bfh.ch), Jan Portner (2014, wirtschaft.bfh.ch)
 
 Installation:
